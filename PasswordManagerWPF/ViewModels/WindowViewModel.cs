@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -10,6 +11,7 @@ namespace PasswordManagerWPF
     public class WindowViewModel : BaseViewModel
     {
         #region Constructor
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -17,11 +19,13 @@ namespace PasswordManagerWPF
         public WindowViewModel(Window window)
         {
             Window = window;
-            Page = new PasswordsPage();
-            MinimizeCommand = new RelayCommand(() => Window.WindowState = WindowState.Minimized);
-            MaximizeCommand = new RelayCommand(() => Window.WindowState ^= WindowState.Maximized);
-            CloseCommand = new RelayCommand(() => Window.Close());
+            Page = new PasswordsPage() 
+            { 
+                DataContext = new PasswordEntryViewModel() 
+            };
+            KeyboardHandler kh = new KeyboardHandler(Window, new Action(SelectPassword));
         }
+
         #endregion
 
         #region Public properties
@@ -63,15 +67,71 @@ namespace PasswordManagerWPF
 
         #endregion
 
-        #region Private member
+        #region Private fields
+
         private Window window;
         private Page page;
+        private System.Windows.Forms.NotifyIcon notifyIcon = null;
+
         #endregion
 
         #region Commands
-        public ICommand MinimizeCommand { get; set; }
-        public ICommand MaximizeCommand { get; set; }
-        public ICommand CloseCommand { get; set; }
+
+        public ICommand MinimizeCommand => new RelayCommand(MinimizeToTray);
+        public ICommand MaximizeCommand => new RelayCommand(() => Window.WindowState ^= WindowState.Maximized);
+        public ICommand CloseCommand => new RelayCommand(CloseWindow);
+
+        #endregion
+
+        #region Methods
+
+        private void MinimizeToTray()
+        {
+            var datacontext = (PasswordEntryViewModel)Page.DataContext;
+            datacontext.LockDb();            
+            window.Hide();
+            if (notifyIcon == null)
+            {
+                notifyIcon = new System.Windows.Forms.NotifyIcon();
+                notifyIcon.Icon = new System.Drawing.Icon(Properties.Resources.IconNotify);
+            }           
+            notifyIcon.Visible = true;
+            notifyIcon.DoubleClick +=
+                delegate (object sender, EventArgs args)
+                {
+                    window.Show();
+                    datacontext.OpenDb();
+                    notifyIcon.Visible = false;
+                };
+        }
+
+        private void SelectPassword()
+        {
+            var datacontext = (PasswordEntryViewModel)Page.DataContext;
+            datacontext.ActiveWindow = PasswordManagerCore.ForegroundWindowHandler.GetActiveWindow();
+            datacontext.SelectionMode = true;
+            datacontext.HideWindow = new Action(HideWindow);
+            window.Show();
+            datacontext.OpenDb();
+        }
+
+        private void HideWindow()
+        {
+            window.Hide();
+        }
+
+        private void CloseWindow()
+        {
+            if(notifyIcon != null)
+            {
+                notifyIcon.Visible = false;
+                notifyIcon.Icon = null;
+                notifyIcon.Dispose();
+            }           
+            Window.Close();
+        }
+
         #endregion
     }
 }
+

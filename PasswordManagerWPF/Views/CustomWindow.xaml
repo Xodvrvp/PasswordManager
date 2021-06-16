@@ -8,7 +8,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManagerWPF"
         mc:Ignorable="d"
-        Title="CustomWindow" Height="450" Width="800"
+        Title="Password Manager" 
+        Height="580" Width="800"
+        MinHeight="400" MinWidth="500"
         WindowStyle="None">
     <Window.Resources>
         <Style TargetType="{x:Type local:CustomWindow}">
@@ -90,5 +92,7 @@
 
     <Grid>
         <Frame x:Name="MainFrame" Content="{Binding Path=Page, Mode=TwoWay}" />
+        <materialDesign:DialogHost Identifier="RootDialog"
+                                   DialogTheme="Inherit" />
     </Grid>
 </Window>

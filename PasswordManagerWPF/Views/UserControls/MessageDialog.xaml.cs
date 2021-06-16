@@ -3,11 +3,11 @@
 namespace PasswordManagerWPF
 {
     /// <summary>
-    /// Interaction logic for SideControl.xaml
+    /// Interaction logic for MessageDialog.xaml
     /// </summary>
-    public partial class SideControl : UserControl
+    public partial class MessageDialog : UserControl
     {
-        public SideControl()
+        public MessageDialog()
         {
             InitializeComponent();
         }

@@ -20,10 +20,22 @@ namespace PasswordManagerWPF
     /// </summary>
     public partial class PasswordsPage : Page
     {
+        private DataGridCell _currentCell;
         public PasswordsPage()
         {
             InitializeComponent();
-            this.DataContext = new PasswordEntryViewModel();
+            //this.DataContext = new PasswordEntryViewModel();
+        }
+
+        private void DataGrid_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is DataGridCell)
+                _currentCell = (DataGridCell)e.OriginalSource;
+        }
+
+        private void DataGrid_KeyDown(object sender, KeyEventArgs e)
+        {
+
         }
     }
 }
