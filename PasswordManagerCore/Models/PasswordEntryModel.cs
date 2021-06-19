@@ -1,5 +1,8 @@
 ﻿namespace PasswordManagerCore
 {
+    /// <summary>
+    /// Data model for password entry
+    /// </summary>
     public class PasswordEntryModel
     {
         public string Title { get; set; }

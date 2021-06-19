@@ -8,21 +8,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 
+/// <summary>
+/// View model for password enteries
+/// </summary>
 namespace PasswordManagerWPF
 {
     public class PasswordEntryViewModel : BaseViewModel
     {
-        #region Constructor
-
-        public PasswordEntryViewModel()
-        {
-        }
-
-        #endregion
-
         #region Public properties
 
+        // list of all entries
         public ObservableCollection<PasswordEntryModel> Passwords { get; set; } = new ObservableCollection<PasswordEntryModel>();
+        // selected entry
         public PasswordEntryModel SelectedEntry
         {
             get => _SelectedEntry;
@@ -34,7 +31,7 @@ namespace PasswordManagerWPF
                 OnPropertyChanged();
             }
         }
-
+        // pasword used to encrypt/decrypt database
         public SecureString DbPassword 
         { 
             get => _DbPassword; 
@@ -42,12 +39,11 @@ namespace PasswordManagerWPF
             {
                 if (_DbPassword == value) return;
                 _DbPassword = value;
-                //SelectedEntry.SecurePassword = _DbPassword;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(AllowAccept));
-                //OnPropertyChanged(nameof(SelectedEntry));
             }
         }        
+        // path of database
         public string DatabasePath
         {
             get => _DatabasePath;
@@ -60,10 +56,12 @@ namespace PasswordManagerWPF
             }
         }
 
+        // enables accept button if user has selected database and filled password
         public bool AllowAccept
         {
             get => IsDbSelectedAndPasswordFilled();
         }
+        // visibility of PasswordEntryControl.xaml usercontrol
         public bool PasswordControlVisible
         {
             get => _PasswordControlVisible;
@@ -75,6 +73,7 @@ namespace PasswordManagerWPF
                 OnPropertyChanged();
             }
         }
+        // visibility of autofill buttons
         public bool SelectionMode
         {
             get => _SelectionMode;
@@ -85,6 +84,7 @@ namespace PasswordManagerWPF
                 OnPropertyChanged();
             }
         }
+        // visibility of password
         public bool PasswordVisible
         {
             get => _PasswordVisibile;
@@ -96,6 +96,7 @@ namespace PasswordManagerWPF
             }
         }
 
+        // password generator settings
         public int PasswordLenght
         {
             get => _PasswordLenght;
@@ -151,6 +152,7 @@ namespace PasswordManagerWPF
                 GeneratePassword();
             }
         }
+        // visibility of password lenght slider, if none of above options are selected slider must be disabled 
         public bool SliderEnabled
         {
             get => _SliderEnabled;
@@ -162,7 +164,9 @@ namespace PasswordManagerWPF
             }
         }
 
+        // action from WindowViewModel, allows this viewmodel to minimize window
         public Action HideWindow { get; set; }
+        // name of a window where autofill should occur
         public string ActiveWindow { get; set; }
 
         #endregion
@@ -206,6 +210,9 @@ namespace PasswordManagerWPF
 
         #region Command methods
 
+        /// <summary>
+        /// Opens OpenDbDialog dialog
+        /// </summary>
         public async void OpenDb()
         {
             PasswordControlVisible = false;
@@ -220,6 +227,9 @@ namespace PasswordManagerWPF
             catch (System.InvalidOperationException) { }            
         }
 
+        /// <summary>
+        /// Opens SaveDbDialog dialog
+        /// </summary>
         private async void SaveDb()
         {
             if (DatabasePath == null || DbPassword == null)
@@ -233,6 +243,10 @@ namespace PasswordManagerWPF
             else PasswordEntryDb.EncryptAndSerialize(DatabasePath, Passwords, DbPassword);
         }
 
+        /// <summary>
+        /// Saves entries to database
+        /// </summary>
+        /// <param name="dialogHostName"></param>
         private async void SaveDb(string dialogHostName)
         {
             try
@@ -250,26 +264,19 @@ namespace PasswordManagerWPF
             catch { }
         }
 
-        private void ClosingEventHandlerEncrypt(object sender, DialogClosingEventArgs eventArgs)
-        {
-            if (eventArgs.Parameter is bool parameter && parameter == true)
-            {
-                PasswordEntryDb.EncryptAndSerialize(DatabasePath, Passwords, DbPassword);
-            }
-        }
-
+        /// <summary>
+        /// Clears all entries and database password
+        /// </summary>
         public void LockDb()
         {
             Passwords.Clear();
             DbPassword?.Dispose();
             if (PasswordControlVisible == true) ToggleControl();
-        }
-
-        private void OpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
-        {
-            PasswordControlVisible = false;
-        }               
-            
+        }         
+        
+        /// <summary>
+        /// Opens system's file dialog
+        /// </summary>
         private void OpenFileDialog()
         {
             OpenFileDialog openFile = new();
@@ -277,6 +284,9 @@ namespace PasswordManagerWPF
             if (openFile.ShowDialog() == System.Windows.Forms.DialogResult.OK) DatabasePath = openFile.FileName;
         }
 
+        /// <summary>
+        /// Opens system's save file dialog
+        /// </summary>
         private void SaveFileDialog()
         {
             SaveFileDialog saveFile = new();
@@ -288,6 +298,9 @@ namespace PasswordManagerWPF
             }
         }
 
+        /// <summary>
+        /// Adds new entry
+        /// </summary>
         private void PwdEntryNew()
         {
             var newEntry = new PasswordEntryModel();
@@ -296,6 +309,9 @@ namespace PasswordManagerWPF
             PasswordControlVisible = true;
         }
 
+        /// <summary>
+        /// Deletes selected entry
+        /// </summary>
         private void PwdEntryDelete()
         {
             Passwords.Remove(SelectedEntry);
@@ -303,16 +319,25 @@ namespace PasswordManagerWPF
             if (Passwords.Count == 0) PasswordControlVisible = false;
         }
 
+        /// <summary>
+        /// Toggles <see cref="PasswordEntryControl"/> visibility
+        /// </summary>
         private void ToggleControl()
         {
             PasswordControlVisible ^= true;
         }
 
+        /// <summary>
+        /// Toggles password visibility
+        /// </summary>
         private void ShowPasswordToggle()
         {
             if (SelectedEntry != null) PasswordVisible ^= true;
         }
 
+        /// <summary>
+        /// Generates random password
+        /// </summary>
         private void GeneratePassword()
         {
             if (!PasswordLowerCaseLetters && !PasswordUpperCaseLetters && !PasswordDigits && !PasswordSpecial)
@@ -329,6 +354,9 @@ namespace PasswordManagerWPF
             }            
         }
 
+        /// <summary>
+        /// Copies username from selected entry to clipboard
+        /// </summary>
         private async void CopyUsername()
         {
             if (SelectedEntry.Username != null)
@@ -339,6 +367,9 @@ namespace PasswordManagerWPF
             }
         }
 
+        /// <summary>
+        /// Copies password from selected entry to clipboard
+        /// </summary>
         private async void CopyPassword()
         {       
             if (SelectedEntry.Password != null)
@@ -349,6 +380,9 @@ namespace PasswordManagerWPF
             }
         }
 
+        /// <summary>
+        /// Copies URL from selected entry to clipboard
+        /// </summary>
         private async void CopyUrl()
         {
             if (SelectedEntry.Url != null)
@@ -359,6 +393,9 @@ namespace PasswordManagerWPF
             } 
         }
         
+        /// <summary>
+        /// Copies and pastes username and password from selected entry to <see cref="ActiveWindow"/>
+        /// </summary>
         public async void AutoFillUsernameAndPassword()
         {    
             if (SelectedEntry != null)
@@ -385,6 +422,9 @@ namespace PasswordManagerWPF
             }
         }
 
+        /// <summary>
+        /// Copies and pastes password from selected entry to <see cref="ActiveWindow"/>
+        /// </summary>
         public async void AutoFillPassword()
         {
             if (SelectedEntry != null)
@@ -406,6 +446,9 @@ namespace PasswordManagerWPF
 
         #region Helpers
 
+        /// <summary>
+        /// Loads passwords from database
+        /// </summary>
         private async void OpenAndDecrypt()
         {
             try
@@ -425,6 +468,24 @@ namespace PasswordManagerWPF
             }
         }
 
+        /// <summary>
+        /// Intercepts closing dialog event, if user clicked accept, saves entries to database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void ClosingEventHandlerEncrypt(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if (eventArgs.Parameter is bool parameter && parameter == true)
+            {
+                PasswordEntryDb.EncryptAndSerialize(DatabasePath, Passwords, DbPassword);
+            }
+        }
+
+        /// <summary>
+        /// Checks if database path is valid. Doesn't check if file exist!
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private bool IsValidPath(string path)
         {
             bool isValid = true;
@@ -439,6 +500,10 @@ namespace PasswordManagerWPF
             return isValid;
         }
 
+        /// <summary>
+        /// Checks if user has selected database path and if has typed anything on the password box
+        /// </summary>
+        /// <returns></returns>
         private bool IsDbSelectedAndPasswordFilled()
         {
             try
@@ -452,6 +517,11 @@ namespace PasswordManagerWPF
             return false;
         }
 
+        /// <summary>
+        /// Waits <paramref name="ms"/> miliseconds. Doens't lock UI.
+        /// </summary>
+        /// <param name="ms"></param>
+        /// <returns></returns>
         private async Task PutTaskDelay(int ms)
         {
             await Task.Delay(ms);

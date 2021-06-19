@@ -4,8 +4,20 @@ using System.Text;
 
 namespace PasswordManagerCore
 {
+    /// <summary>
+    /// Creates randomly generated passwords
+    /// </summary>
     public static class PasswordGenerator
     {
+        /// <summary>
+        /// Randomly generates password of selected lenght and containing selected sets of symbols.
+        /// </summary>
+        /// <param name="passwordLenght"></param>
+        /// <param name="lowerCase"></param>
+        /// <param name="upperCase"></param>
+        /// <param name="digits"></param>
+        /// <param name="special"></param>
+        /// <returns></returns>
         public static string GeneratePassword(int passwordLenght, bool lowerCase, bool upperCase, bool digits, bool special)
         {
             if (!lowerCase && !upperCase && !digits && !special) throw new ArgumentException("Choose characters");

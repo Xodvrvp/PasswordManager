@@ -5,10 +5,13 @@ using System.Windows.Interop;
 
 namespace PasswordManagerWPF
 {
+    /// <summary>
+    /// Handles keyboard shortcuts. Uses user32.dll.
+    /// </summary>
     public class KeyboardHandler
     {
         public const int WM_HOTKEY = 0x0312;
-        public const int VIRTUALKEYCODE_FOR_CAPS_LOCK = 0x79;
+        public const int VIRTUALKEYCODE_FOR_F10 = 0x79;
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -57,7 +60,7 @@ namespace PasswordManagerWPF
 
         private void SetupHotKey(IntPtr handle)
         {
-            RegisterHotKey(handle, GetType().GetHashCode(), 0, VIRTUALKEYCODE_FOR_CAPS_LOCK);
+            RegisterHotKey(handle, GetType().GetHashCode(), 0, VIRTUALKEYCODE_FOR_F10);
         }
 
         public void Dispose()

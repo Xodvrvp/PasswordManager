@@ -4,6 +4,9 @@ using System.Text;
 using System.Diagnostics;
 using System.Linq;
 
+/// <summary>
+/// Handles foreground window. Uses user32.dll
+/// </summary>
 namespace PasswordManagerCore
 {
     public static class ForegroundWindowHandler
@@ -16,7 +19,11 @@ namespace PasswordManagerCore
 
         [DllImport("user32.dll")]
         static extern int GetWindowText(int hWnd, StringBuilder text, int count);
-
+        
+        /// <summary>
+        /// Gets name of active window
+        /// </summary>
+        /// <returns></returns>
         public static string GetActiveWindow()
         {
             const int nChars = 256;
@@ -32,6 +39,10 @@ namespace PasswordManagerCore
             return null;
         }
 
+        /// <summary>
+        /// Sets active window to <paramref name="appName"/>
+        /// </summary>
+        /// <param name="appName"></param>
         public static void SetActiveWindow(string appName)
         {
             var proc = Process.GetProcessesByName(appName).FirstOrDefault();
