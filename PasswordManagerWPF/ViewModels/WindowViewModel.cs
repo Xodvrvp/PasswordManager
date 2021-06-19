@@ -30,6 +30,7 @@ namespace PasswordManagerWPF
 
         #region Public properties
 
+        // page displayed by window
         public Page Page
         {
             get => page;
@@ -41,6 +42,7 @@ namespace PasswordManagerWPF
                 OnPropertyChanged();
             }
         }
+        // window that uses this viewmodel
         public Window Window
         {
             get => window;
@@ -53,16 +55,11 @@ namespace PasswordManagerWPF
             }
         }
 
-        /// <summary>
-        /// Size of resize border
-        /// </summary>
+        // Size of resize border
         public int ResizeBorder { get; set; } = 6;
-
+        // Thickness of resize border
         public Thickness ResizeBorderThickness { get { return new Thickness(ResizeBorder); } }
-
-        /// <summary>
-        /// Height of title bar
-        /// </summary>
+        // Height of title bar
         public int TitleHeight { get; set; } = 40;
 
         #endregion
@@ -71,6 +68,7 @@ namespace PasswordManagerWPF
 
         private Window window;
         private Page page;
+        // notify icon, allows working in system tray
         private System.Windows.Forms.NotifyIcon notifyIcon = null;
 
         #endregion
@@ -85,6 +83,9 @@ namespace PasswordManagerWPF
 
         #region Methods
 
+        /// <summary>
+        /// Minimizes application to system tray.
+        /// </summary>
         private void MinimizeToTray()
         {
             var datacontext = (PasswordEntryViewModel)Page.DataContext;
@@ -105,6 +106,10 @@ namespace PasswordManagerWPF
                 };
         }
 
+        /// <summary>
+        /// Method triggered by <see cref="KeyboardHandler"/> when user press selected hotkey.
+        /// Allows user to select password and use autofill functionality.
+        /// </summary>
         private void SelectPassword()
         {
             var datacontext = (PasswordEntryViewModel)Page.DataContext;
@@ -115,11 +120,17 @@ namespace PasswordManagerWPF
             datacontext.OpenDb();
         }
 
+        /// <summary>
+        /// Minimizes application
+        /// </summary>
         private void HideWindow()
         {
             window.Hide();
         }
 
+        /// <summary>
+        /// Closes application and cleans up <see cref="notifyIcon"/>
+        /// </summary>
         private void CloseWindow()
         {
             if(notifyIcon != null)

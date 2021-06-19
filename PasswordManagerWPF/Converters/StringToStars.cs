@@ -4,6 +4,9 @@ using System.Text;
 
 namespace PasswordManagerWPF
 {
+    /// <summary>
+    /// Converter that allows displaying masked password
+    /// </summary>
     public class StringToStars : BaseConverter<StringToStars>
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
